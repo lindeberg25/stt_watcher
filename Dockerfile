@@ -12,7 +12,7 @@ RUN chmod 777 /deployment/audio/
 
 
 COPY requirements.txt requirements.txt
-#RUN  apt-get -y install git
+RUN  apt-get -y install git
 
 
 RUN pip install -r requirements.txt
