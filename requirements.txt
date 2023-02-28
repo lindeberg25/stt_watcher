@@ -1,3 +1,4 @@
 torch
 watchdog
 ffmpeg
+stomp.py
