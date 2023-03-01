@@ -29,4 +29,4 @@ COPY . .
 
 USER 1001
 
-CMD [ "python3", "stt_watcher.py"]
+CMD [ "python3", "./stt_watcher.py"]
