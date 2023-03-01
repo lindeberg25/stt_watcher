@@ -53,8 +53,12 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     start = time.time()
     print(file_path)
     result = model.transcribe(file_path)
-    print("--- %s seconds ---" % (time.time() - start))
-    print(result)
+    
+    arquivo = open("transcription.txt", "w")
+    arquivo.write("--- %s seconds ---" % (time.time() - start))
+    arquivo.write(result)
+    arquivo.close()
+
 
     # Enviar a mensagem para a fila do AMQ
     #conn = Connection(host_and_ports=[(amq_host, amq_port)])
