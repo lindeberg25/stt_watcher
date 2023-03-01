@@ -7,8 +7,10 @@ WORKDIR /deployment
 RUN mkdir /deployment/cache/
 RUN mkdir /deployment/audio/
 
+RUN chmod 777 /deployment/
 RUN chmod 777 /deployment/cache/
 RUN chmod 777 /deployment/audio/
+
 
 
 RUN apt-get -qq update \
