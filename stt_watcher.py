@@ -51,9 +51,9 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     model = whisper.load_model("medium", device=DEVICE)
     
     start = time.time()
- 
+    logging.info("Começou a transcrever")
     result = model.transcribe(file_path)
-    
+    logging.info("Finalizou a transcrição")
     logging.info("--- %s seconds ---" % (time.time() - start))
     logging.info(result)
 
@@ -87,12 +87,13 @@ class Watcher:
         observer = Observer()
         observer.schedule(event_handler, path=self.path, recursive=True)
         observer.start()
-
+        logging.info("Iniciou o observer.start()")
         # Cria um pool de processos para executar a função process_file para cada novo arquivo encontrado
         with Pool(processes=min(cpu_count() - 1, 10)) as pool:
             while True:
                 if not self.queue.empty():
                     file_path = self.queue.get()
+                    logging.info("Pegou elemento da fila")
                     pool.apply_async(process_file_wrapper, [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
                 time.sleep(1)
 
