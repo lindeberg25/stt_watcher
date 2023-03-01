@@ -8,6 +8,7 @@ import whisper
 import torch
 import time
 import logging
+from multiprocessing import Pool, cpu_count, map_async
 
 
 # O código é responsável por monitorar um diretório específico em busca de novos arquivos criados e, em seguida, 
@@ -88,14 +89,15 @@ class Watcher:
         observer.schedule(event_handler, path=self.path, recursive=True)
         observer.start()
         logging.info("Iniciou o observer.start()")
+
         # Cria um pool de processos para executar a função process_file para cada novo arquivo encontrado
-        with Pool(processes=min(cpu_count() - 1, 10)) as pool:
-            while True:
-                if not self.queue.empty():
-                    file_path = self.queue.get()
-                    logging.info("Pegou elemento da fila")
-                    pool.apply_async(process_file_wrapper, [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
-                time.sleep(1)
+        while True:
+            if not self.queue.empty():
+                file_path = self.queue.get()
+                logging.info("Pegou elemento da fila")
+                args_list = [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)]
+                self.pool.map_async(process_file_wrapper, args_list)
+            time.sleep(1)
 
         observer.stop()
         observer.join()
