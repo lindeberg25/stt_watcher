@@ -19,7 +19,7 @@ RUN apt-get -qq update \
 COPY requirements.txt requirements.txt
 RUN  apt-get -y install git
 
-
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 RUN pip install "git+https://github.com/openai/whisper.git" 
 
