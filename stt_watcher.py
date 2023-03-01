@@ -101,5 +101,6 @@ class Watcher:
         observer.join()
 
 if __name__ == "__main__":
+    print("Inicia o main")
     watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
     watcher.run()
