@@ -47,21 +47,16 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     
     
     # Processar o arquivo aqui...
-    logging.info("f"Processando arquivo {file_path} em {time.ctime()} na CPU {cpu_count() - 1}"")
-    print(f"Processando arquivo {file_path} em {time.ctime()} na CPU {cpu_count() - 1}")
     #time.sleep(5) # Simulando o processamento do arquivo
     model = whisper.load_model("medium", device=DEVICE)
     
     start = time.time()
-    #print(file_path)
-    #logging.info(file_path)
+ 
     result = model.transcribe(file_path)
     
-    #arquivo = open("transcription.txt", "w")
-    #arquivo.write("--- %s seconds ---" % (time.time() - start))
     logging.info("--- %s seconds ---" % (time.time() - start))
     logging.info(result)
-    #arquivo.close()
+
 
 
     # Enviar a mensagem para a fila do AMQ
@@ -86,7 +81,7 @@ class Watcher:
         self.amq_user = amq_user
         self.amq_password = amq_password
         self.amq_queue = amq_queue
-
+    
     def run(self):
         event_handler = MyHandler(self.queue)
         observer = Observer()
@@ -105,7 +100,8 @@ class Watcher:
         observer.join()
 
 if __name__ == "__main__":
-    print("Inicia o main")
-    logging.info("Inicia o main")
+    logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
     watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
+    logging.info('Started')
     watcher.run()
+    logging.info('Finished')
