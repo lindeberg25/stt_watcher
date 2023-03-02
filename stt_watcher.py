@@ -95,7 +95,7 @@ class Watcher:
                     file_path = self.queue.get()
                     logging.info("Pegou elemento da fila")
                     args_list = [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)]
-                    pool.map(process_file_wrapper, args_list, chunksize=1)
+                    results = [pool.apply(process_file_wrapper, args) for args in args_list]
                 time.sleep(1)
 
         observer.stop()
