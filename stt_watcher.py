@@ -42,10 +42,6 @@ class MyHandler(FileSystemEventHandler):
 
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
 def process_file(model, file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
-    # Check if NVIDIA GPU is available
-    torch.cuda.is_available()
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    
     
     
     # Processar o arquivo aqui...
@@ -109,6 +105,11 @@ class Watcher:
         observer.join()
 
 if __name__ == "__main__":
+    
+    # Check if NVIDIA GPU is available
+    torch.cuda.is_available()
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    
     model = whisper.load_model("medium.pt", device=DEVICE)
     logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
     watcher = Watcher(model, "./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
