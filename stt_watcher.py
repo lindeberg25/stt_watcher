@@ -48,7 +48,7 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     
     # Processar o arquivo aqui...
     #time.sleep(5) # Simulando o processamento do arquivo
-    model = whisper.load_model("medium", device=DEVICE, download_root="/deployment/")
+    model = whisper.load_model("medium.pt", device=DEVICE)
     
     start = time.time()
     logging.info("Começou a transcrever")
