@@ -41,7 +41,7 @@ class MyHandler(FileSystemEventHandler):
             self.queue.put(event.src_path)
 
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
-def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
+def process_file(model, file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
     # Check if NVIDIA GPU is available
     torch.cuda.is_available()
     DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -50,12 +50,12 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     
     # Processar o arquivo aqui...
     #time.sleep(5) # Simulando o processamento do arquivo
-    model = whisper.load_model("medium.pt", device=DEVICE)
+    #model = whisper.load_model("medium.pt", device=DEVICE)
     
     start = time.time()
     logging.info("Inicia transcrição")
     duration = librosa.get_duration(path=file_path)
-    result = model.transcribe(file_path)
+    result = model.transcribe(file_path, language="pt")
     logging.info("Finaliza transcrição")
     logging.info( result['text'])
     logging.info("Duração do áudio %s seconds " % duration)
@@ -79,7 +79,8 @@ def process_file_wrapper(args):
 
 # Classe que observa o diretório especificado e processa novos arquivos em uma thread separada
 class Watcher:
-    def __init__(self, path, amq_host, amq_port, amq_user, amq_password, amq_queue):
+    def __init__(self, model, path, amq_host, amq_port, amq_user, amq_password, amq_queue):
+        self.model = model
         self.path = path
         self.queue = Queue()
         self.amq_host = amq_host
@@ -101,15 +102,16 @@ class Watcher:
                     file_path = self.queue.get()
                     logging.info("Pegou áudio da fila")
                 
-                    pool.apply(process_file_wrapper, [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
+                    pool.apply(process_file_wrapper, [(file_path, self.model, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
                 time.sleep(1)
 
         observer.stop()
         observer.join()
 
 if __name__ == "__main__":
+    model = whisper.load_model("medium.pt", device=DEVICE)
     logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
-    watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
+    watcher = Watcher(model, "./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
     logging.info('Monitora pasta de áudios do SIS')
     watcher.run()
-    logging.info('Finished')
+    logging.info('Finaliza monitoração de pasta de áudio do SIS')
