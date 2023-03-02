@@ -2,3 +2,4 @@ torch
 watchdog
 ffmpeg
 stomp.py
+librosa
