@@ -4,6 +4,12 @@ USER root
 
 WORKDIR /deployment
 
+RUN touch .cache
+RUN chmod 777 .cache
+
+RUN touch /deployment/.cache
+RUN chmod 777 /deployment/.cache
+
 RUN mkdir /deployment/cache/
 RUN mkdir /deployment/audio/
 
