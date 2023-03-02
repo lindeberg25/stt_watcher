@@ -8,6 +8,7 @@ import whisper
 import torch
 import time
 import logging
+import librosa
 
 
 # O código é responsável por monitorar um diretório específico em busca de novos arquivos criados e, em seguida, 
@@ -35,7 +36,8 @@ class MyHandler(FileSystemEventHandler):
 
         elif event.event_type == 'created':
             # Novo arquivo criado
-            print(f"Arquivo criado: {event.src_path}")
+            #print(f"Arquivo de áudio criado: {event.src_path}")
+            logging.info(f"Arquivo de áudio criado: {event.src_path}")
             self.queue.put(event.src_path)
 
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
@@ -51,11 +53,15 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     model = whisper.load_model("medium.pt", device=DEVICE)
     
     start = time.time()
-    logging.info("Começou a transcrever")
+    logging.info("Inicia transcrição")
+    duration = librosa.get_duration(filename=file_path)
     result = model.transcribe(file_path)
-    logging.info("Finalizou a transcrição")
-    logging.info("--- %s seconds ---" % (time.time() - start))
-    logging.info(result)
+    logging.info("Finaliza transcrição")
+    logging.info( result['text'])
+    logging.info("Duração do áudio %s seconds " % duration)
+    logging.info("Tempo de transcrição %s seconds " % (time.time() - start))
+    #logging.info(result)
+    
 
 
 
@@ -104,6 +110,6 @@ class Watcher:
 if __name__ == "__main__":
     logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
     watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
-    logging.info('Started')
+    logging.info('Monitorar a pasta de áudios do SIS')
     watcher.run()
     logging.info('Finished')
