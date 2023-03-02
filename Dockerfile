@@ -4,6 +4,8 @@ USER root
 
 WORKDIR /deployment
 
+ENV NUMBA_CACHE_DIR=/tmp/
+
 RUN touch .cache
 RUN chmod 777 .cache
 
