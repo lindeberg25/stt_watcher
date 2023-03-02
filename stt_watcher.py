@@ -99,7 +99,7 @@ class Watcher:
             while True:
                 if not self.queue.empty():
                     file_path = self.queue.get()
-                    logging.info("Pegou elemento da fila")
+                    logging.info("Pegou áudio da fila")
                 
                     pool.apply(process_file_wrapper, [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
                 time.sleep(1)
