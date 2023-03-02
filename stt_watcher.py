@@ -110,6 +110,6 @@ class Watcher:
 if __name__ == "__main__":
     logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
     watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
-    logging.info('Monitorar a pasta de áudios do SIS')
+    logging.info('Monitora pasta de áudios do SIS')
     watcher.run()
     logging.info('Finished')
