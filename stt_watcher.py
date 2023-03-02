@@ -54,7 +54,7 @@ def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queu
     
     start = time.time()
     logging.info("Inicia transcrição")
-    duration = librosa.get_duration(filename=file_path)
+    duration = librosa.get_duration(path=file_path)
     result = model.transcribe(file_path)
     logging.info("Finaliza transcrição")
     logging.info( result['text'])
