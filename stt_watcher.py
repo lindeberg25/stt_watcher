@@ -75,7 +75,7 @@ def process_file_wrapper(args):
 
 # Classe que observa o diretório especificado e processa novos arquivos em uma thread separada
 class Watcher:
-    def __init__(path, amq_host, amq_port, amq_user, amq_password, amq_queue):
+    def __init__(self, path, amq_host, amq_port, amq_user, amq_password, amq_queue):
        
         self.path = path
         self.queue = Queue()
