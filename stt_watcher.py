@@ -122,11 +122,9 @@ class Watcher:
         observer.stop()
         observer.join()
 
-if __name__ == "__main__":
-   
-    
-    logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
-    watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
-    logging.info('Monitora pasta de áudios do SIS')
-    watcher.run()
-    logging.info('Finaliza monitoração de pasta de áudio do SIS')
+
+logging.basicConfig(filename='stt_watcher.log', level=logging.INFO)
+watcher = Watcher("./audio", "localhost", 61613, "user", "password", "/queue/myqueue")
+logging.info('Monitora pasta de áudios do SIS')
+watcher.run()
+logging.info('Finaliza monitoração de pasta de áudio do SIS')
