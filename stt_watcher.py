@@ -63,7 +63,10 @@ class whisperModel(object):
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
 def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
         
-    model = whisperModel.instance()
+    # Check if NVIDIA GPU is available
+    torch.cuda.is_available()
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    model = whisper.load_model("medium.pt", device=DEVICE, language="pt")
     
     start = time.time()
     logging.info("Inicia transcrição")
