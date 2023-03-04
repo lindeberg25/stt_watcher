@@ -41,12 +41,19 @@ class MyHandler(FileSystemEventHandler):
             self.queue.put(event.src_path)
 
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
-def process_file(model, file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
+def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
     
     
     # Processar o arquivo aqui...
     #time.sleep(5) # Simulando o processamento do arquivo
     #model = whisper.load_model("medium.pt", device=DEVICE)
+    # Check if NVIDIA GPU is available
+    torch.cuda.is_available()
+    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+    
+    model = whisper.load_model("medium.pt", device=DEVICE)
+        
+    
     
     start = time.time()
     logging.info("Inicia transcrição")
@@ -91,11 +98,6 @@ class Watcher:
         observer.schedule(event_handler, path=self.path, recursive=True)
         observer.start()
         
-        # Check if NVIDIA GPU is available
-        torch.cuda.is_available()
-        DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    
-        model = whisper.load_model("medium.pt", device=DEVICE)
         
         # Cria um pool de processos para executar a função process_file para cada novo arquivo encontrado
         with Pool(processes=min(cpu_count() - 1, 10)) as pool:
@@ -104,7 +106,7 @@ class Watcher:
                     file_path = self.queue.get()
                     logging.info("Pegou áudio da fila")
                 
-                    pool.apply(process_file_wrapper, [(model, file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
+                    pool.apply(process_file_wrapper, [(file_path, self.amq_host, self.amq_port, self.amq_user, self.amq_password, self.amq_queue)])
                 time.sleep(1)
 
         observer.stop()
