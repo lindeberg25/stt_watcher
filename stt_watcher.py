@@ -40,20 +40,30 @@ class MyHandler(FileSystemEventHandler):
             logging.info(f"Arquivo de áudio criado: {event.src_path}")
             self.queue.put(event.src_path)
 
+            
+class whisperModel(object):
+    _instance = None
+
+    def __init__(self):
+        raise RuntimeError('Call instance() instead')
+
+    @classmethod
+    def instance(cls):
+        if cls._instance is None:
+            print('Cria instância única do modelo Whisper')
+            cls._instance = cls.__new__(cls)
+            
+            # Check if NVIDIA GPU is available
+            torch.cuda.is_available()
+            DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+            model = whisper.load_model("medium.pt", device=DEVICE, language="pt")
+            
+        return cls._instance
+
 # Função que processa o arquivo e envia uma mensagem para o ActiveMQ
 def process_file(file_path, amq_host, amq_port, amq_user, amq_password, amq_queue):
-    
-    
-    # Processar o arquivo aqui...
-    #time.sleep(5) # Simulando o processamento do arquivo
-    #model = whisper.load_model("medium.pt", device=DEVICE)
-    # Check if NVIDIA GPU is available
-    torch.cuda.is_available()
-    DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-    
-    model = whisper.load_model("medium.pt", device=DEVICE)
         
-    
+    model = whisperModel.instance()
     
     start = time.time()
     logging.info("Inicia transcrição")
